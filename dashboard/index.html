@@ -938,7 +938,12 @@
     </main>
   </div>
 
-  <script>
+    <script>
+    // Priority: Mobile devices default to Compact Edition unless ?view=full is explicitly specified
+    if ((window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) && !window.location.search.includes('view=full')) {
+      window.location.replace('../');
+    }
+
     const embeddedData = [
       {year:104, western_year:2015, period:"全年", revenue_100m:3007.0, yoy_pct:2.40, driver:"行動網路與雲端服務初期普及", source_note:"經濟部統計處", type:"annual"},
       {year:105, western_year:2016, period:"全年", revenue_100m:3157.0, yoy_pct:5.00, driver:"行動網路與雲端服務初期普及", source_note:"經濟部統計處", type:"annual"},
