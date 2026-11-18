@@ -545,7 +545,7 @@
         <input id="sheetUrl" placeholder="貼上 CSV 或 Google Sheet URL">
         <button id="loadSheet">載入資料</button>
         <button id="resetData" class="secondary">使用內建資料</button>
-        <div id="dataStatus" class="status">將優先讀取同站 CSV；失敗時使用內建資料。</div>
+        <div id="dataStatus" class="status">預設讀取 Google Sheet 即時資料庫；失敗時使用內建資料。</div>
       </div>
       <div class="source-box">
         CSV 或 Google Sheet 欄位需包含：year、western_year、period、revenue_100m、yoy_pct、driver、source_note、type。
@@ -729,10 +729,11 @@
       {year:114, western_year:2025, period:"Q3", revenue_100m:1636.5, yoy_pct:10.44, driver:"雲端化與AI轉型加速；遊戲產業擴大雲端基礎建設", source_note:"數位發展部數位產業署", type:"quarterly"},
       {year:114, western_year:2025, period:"Q4", revenue_100m:1907.1, yoy_pct:9.29, driver:"企業導入AI及數位治理；半導體跨境營運擴大", source_note:"數位發展部數位產業署", type:"quarterly"},
       {year:115, western_year:2026, period:"Q1", revenue_100m:1679.3, yoy_pct:12.21, driver:"AI Agent、多雲託管、資安監控、防詐信任科技及AI治理需求擴張", source_note:"數位發展部數位產業署", type:"quarterly"},
-      {year:115, western_year:2026, period:"Q2", revenue_100m:1767.2, yoy_pct:13.59, driver:"Agentic AI導入企業流程；AI專案、系統整合、雲端服務與系統維運需求增加", source_note:"數位發展部數位產業署", type:"quarterly"}
+      {year:115, western_year:2026, period:"Q2", revenue_100m:1767.2, yoy_pct:13.59, driver:"Agentic AI導入企業流程；AI專案、系統整合、雲端服務與系統維運需求增加", source_note:"數位發展部數位產業署", type:"quarterly"},
+      {year:115, western_year:2026, period:"Q3", revenue_100m:1960.8, yoy_pct:19.82, driver:"半導體及高科技製造業擴建AI基礎設施與擴充產能；政府大型專案認列與企業AI應用推升雲端算力需求", source_note:"數位發展部數位產業署", type:"quarterly"}
     ];
 
-    const defaultSheetUrl = "/dashboard/data.csv";
+    const defaultSheetUrl = "https://docs.google.com/spreadsheets/d/1fR-Jx86Zs1cDT_WGuwenN-zegntq3jLgmioqzK6Q7qE/gviz/tq?gid=0";
     let activeData = [...embeddedData];
     let timelineStartIndex = 0;
     let timelineIndex = 0;
