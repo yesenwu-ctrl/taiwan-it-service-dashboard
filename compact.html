@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>臺灣電腦及資訊服務業營業額速覽 (115Q3最新版)</title>
+  <title>臺灣電腦及資訊服務業營業額速覽 (115Q3 最新版)</title>
   <style>
     :root {
       --bg: #F8FAFC;
@@ -66,7 +66,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 16px;
+      padding: 9px 18px;
       background: var(--cyan);
       color: #fff;
       text-decoration: none;
@@ -74,11 +74,12 @@
       font-size: 13px;
       font-weight: 700;
       box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.1s;
       white-space: nowrap;
     }
     .btn-switch:hover {
       background: #0369A1;
+      transform: translateY(-1px);
     }
 
     /* KPI Cards */
@@ -125,26 +126,80 @@
     .trend-up { background: #ECFDF5; color: var(--green); }
     .trend-highlight { background: #FEF3C7; color: #B45309; }
 
-    /* Chart Card */
+    /* Chart Card with Scaled Slope & Annotated YoY */
     .chart-card {
       background: var(--panel);
       border-radius: 12px;
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      padding: 20px;
+      padding: 22px;
       margin-bottom: 24px;
+    }
+    .card-head {
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.5;
     }
     .chart-scroll-wrapper {
       width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 6px;
+    }
+    .chart-container-inner {
+      position: relative;
+      min-width: 600px;
+      padding-top: 10px;
+    }
+    .grid-lines {
+      position: absolute;
+      top: 0;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      pointer-events: none;
+    }
+    .grid-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      border-bottom: 1px dashed rgba(100, 116, 139, 0.22);
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+    .grid-val {
+      font-size: 10.5px;
+      color: #94A3B8;
+      background: var(--panel);
+      padding: 0 4px;
+      margin-bottom: -7px;
+      font-weight: 600;
     }
     .bar-chart {
       display: flex;
       align-items: flex-end;
-      gap: 12px;
-      height: 160px;
-      padding-top: 24px;
-      margin-top: 6px;
+      gap: 14px;
+      height: 230px;
       border-bottom: 2px solid var(--line);
+      position: relative;
+      z-index: 1;
     }
     .bar-col {
       flex: 1;
@@ -154,35 +209,73 @@
       height: 100%;
       justify-content: flex-end;
       position: relative;
+      min-width: 0;
     }
-    .bar-val {
+    .bar-stats {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .badge-yoy {
       font-size: 11px;
-      font-weight: 700;
-      color: var(--muted);
-      margin-bottom: 4px;
+      font-weight: 800;
+      color: #059669;
+      background: #ECFDF5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      border: 1px solid rgba(5, 150, 105, 0.2);
+    }
+    .badge-yoy.peak {
+      color: #FFFFFF;
+      background: linear-gradient(135deg, #059669, #0284C7);
+      border: none;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+      font-weight: 850;
+      padding: 3px 8px;
+    }
+    .bar-num {
+      font-size: 12.5px;
+      font-weight: 750;
+      color: #334155;
+      white-space: nowrap;
+    }
+    .bar-num.peak-num {
+      font-size: 14.5px;
+      font-weight: 900;
+      color: #0284C7;
+    }
+    .bar-pillar-wrap {
+      width: 100%;
+      height: 140px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
     }
     .bar-pillar {
       width: 100%;
       max-width: 44px;
       border-radius: 6px 6px 0 0;
       background: #CBD5E1;
-      transition: height 0.3s ease;
+      transition: height 0.4s ease, background 0.3s ease;
     }
     .bar-col.active .bar-pillar {
       background: linear-gradient(180deg, #0284C7 0%, #2563EB 100%);
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
-    }
-    .bar-col.active .bar-val {
-      color: var(--blue);
-      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
     }
     .bar-label {
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--muted);
-      margin-top: 6px;
+      margin-top: 8px;
       text-align: center;
-      font-weight: 600;
+      font-weight: 700;
       white-space: nowrap;
+    }
+    .bar-col.active .bar-label {
+      color: #0284C7;
+      font-weight: 850;
     }
 
     /* Main Grid */
@@ -199,21 +292,6 @@
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
       padding: 20px;
-    }
-    .card-head {
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 10px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .card-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--ink);
     }
 
     .table-scroll-wrapper {
@@ -331,18 +409,14 @@
         margin-top: 4px;
       }
       .chart-card {
-        padding: 12px;
+        padding: 14px 12px;
         margin-bottom: 16px;
       }
-      .chart-scroll-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 6px;
+      .card-subtitle {
+        font-size: 11px;
       }
-      .bar-chart {
-        min-width: 440px;
-        height: 140px;
-        gap: 6px;
+      .chart-container-inner {
+        min-width: 580px;
       }
       .card {
         padding: 12px;
@@ -380,7 +454,7 @@
         <p class="subtitle">主管機關：數位發展部數位產業署官方統計公布（115年11月）</p>
       </div>
       <div>
-        <a href="index.html" class="btn-switch">切換至完整分析版儀表板 ➔</a>
+        <a href="dashboard/" class="btn-switch">切換至完整分析版儀表板 ➔</a>
       </div>
     </header>
 
@@ -408,51 +482,110 @@
       </div>
     </section>
 
-    <!-- Visual Trend Bar Chart -->
+    <!-- Visual Trend Bar Chart (Scaled Slope & Annotated YoY) -->
     <div class="chart-card">
       <div class="card-head">
         <div>
           <div class="card-title">近 7 季營業額走勢趨勢圖 (億元新台幣)</div>
-          <span style="font-size:12px; color:var(--muted)">歷史單季突破 1,960 億大關</span>
+          <div class="card-subtitle">歷史單季突破 1,960 億大關 ｜ 縱軸起算自 1,350 億元以凸顯季增與年增斜率 ｜ 每季均標註年增率 (YoY)</div>
         </div>
-        <div class="mobile-hint">👈 左右滑動檢視各季趨勢 👉</div>
+        <div class="mobile-hint">👈 手機可左右滑動檢視各季趨勢 👉</div>
       </div>
+
       <div class="chart-scroll-wrapper">
-        <div class="bar-chart">
-          <div class="bar-col">
-            <div class="bar-val">1,496.5</div>
-            <div class="bar-pillar" style="height: 60%;"></div>
-            <div class="bar-label">114Q1</div>
+        <div class="chart-container-inner">
+          <!-- Background Grid Reference Lines -->
+          <div class="grid-lines">
+            <div class="grid-line" style="bottom: 94%;"><span class="grid-val">2,000億</span></div>
+            <div class="grid-line" style="bottom: 69%;"><span class="grid-val">1,800億</span></div>
+            <div class="grid-line" style="bottom: 38%;"><span class="grid-val">1,600億</span></div>
+            <div class="grid-line" style="bottom: 8%;"><span class="grid-val">1,400億</span></div>
           </div>
-          <div class="bar-col">
-            <div class="bar-val">1,555.8</div>
-            <div class="bar-pillar" style="height: 64%;"></div>
-            <div class="bar-label">114Q2</div>
-          </div>
-          <div class="bar-col">
-            <div class="bar-val">1,636.5</div>
-            <div class="bar-pillar" style="height: 68%;"></div>
-            <div class="bar-label">114Q3</div>
-          </div>
-          <div class="bar-col">
-            <div class="bar-val">1,907.1</div>
-            <div class="bar-pillar" style="height: 82%;"></div>
-            <div class="bar-label">114Q4</div>
-          </div>
-          <div class="bar-col">
-            <div class="bar-val">1,679.3</div>
-            <div class="bar-pillar" style="height: 70%;"></div>
-            <div class="bar-label">115Q1</div>
-          </div>
-          <div class="bar-col">
-            <div class="bar-val">1,767.2</div>
-            <div class="bar-pillar" style="height: 75%;"></div>
-            <div class="bar-label">115Q2</div>
-          </div>
-          <div class="bar-col active">
-            <div class="bar-val">1,960.8</div>
-            <div class="bar-pillar" style="height: 90%;"></div>
-            <div class="bar-label">115Q3 (最新)</div>
+
+          <div class="bar-chart">
+            <!-- 114Q1 -->
+            <div class="bar-col">
+              <div class="bar-stats">
+                <span class="badge-yoy">+5.31% YoY</span>
+                <span class="bar-num">1,496.5</span>
+              </div>
+              <div class="bar-pillar-wrap">
+                <div class="bar-pillar" style="height: 23%;"></div>
+              </div>
+              <div class="bar-label">114Q1</div>
+            </div>
+
+            <!-- 114Q2 -->
+            <div class="bar-col">
+              <div class="bar-stats">
+                <span class="badge-yoy">+6.87% YoY</span>
+                <span class="bar-num">1,555.8</span>
+              </div>
+              <div class="bar-pillar-wrap">
+                <div class="bar-pillar" style="height: 32%;"></div>
+              </div>
+              <div class="bar-label">114Q2</div>
+            </div>
+
+            <!-- 114Q3 -->
+            <div class="bar-col">
+              <div class="bar-stats">
+                <span class="badge-yoy">+10.44% YoY</span>
+                <span class="bar-num">1,636.5</span>
+              </div>
+              <div class="bar-pillar-wrap">
+                <div class="bar-pillar" style="height: 44%;"></div>
+              </div>
+              <div class="bar-label">114Q3</div>
+            </div>
+
+            <!-- 114Q4 -->
+            <div class="bar-col">
+              <div class="bar-stats">
+                <span class="badge-yoy">+9.29% YoY</span>
+                <span class="bar-num">1,907.1</span>
+              </div>
+              <div class="bar-pillar-wrap">
+                <div class="bar-pillar" style="height: 86%;"></div>
+              </div>
+              <div class="bar-label">114Q4</div>
+            </div>
+
+            <!-- 115Q1 -->
+            <div class="bar-col">
+              <div class="bar-stats">
+                <span class="badge-yoy">+12.21% YoY</span>
+                <span class="bar-num">1,679.3</span>
+              </div>
+              <div class="bar-pillar-wrap">
+                <div class="bar-pillar" style="height: 51%;"></div>
+              </div>
+              <div class="bar-label">115Q1</div>
+            </div>
+
+            <!-- 115Q2 -->
+            <div class="bar-col">
+              <div class="bar-stats">
+                <span class="badge-yoy">+13.59% YoY</span>
+                <span class="bar-num">1,767.2</span>
+              </div>
+              <div class="bar-pillar-wrap">
+                <div class="bar-pillar" style="height: 64%;"></div>
+              </div>
+              <div class="bar-label">115Q2</div>
+            </div>
+
+            <!-- 115Q3 (Active Peak) -->
+            <div class="bar-col active">
+              <div class="bar-stats">
+                <span class="badge-yoy peak">🔥 +19.82% YoY</span>
+                <span class="bar-num peak-num">1,960.8 <small style="font-size:11px;">億</small></span>
+              </div>
+              <div class="bar-pillar-wrap">
+                <div class="bar-pillar" style="height: 94%;"></div>
+              </div>
+              <div class="bar-label">115Q3 (最新)</div>
+            </div>
           </div>
         </div>
       </div>
@@ -562,7 +695,7 @@
     </div>
 
     <div class="footer">
-      本儀表板資料源自數位發展部數位產業署官方調查結果 · 同步提供 <a href="index.html">完整互動版儀表板</a>
+      本儀表板資料源自數位發展部數位產業署官方調查結果 · 提供 <a href="dashboard/">完整互動版儀表板</a>
     </div>
   </div>
 </body>
