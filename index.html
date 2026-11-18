@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>臺灣電腦及資訊服務業營業額儀表板</title>
   <style>
     :root {
@@ -495,65 +495,305 @@
       line-height: 1.6;
     }
 
-    @media (max-width: 1100px) {
-      .shell { grid-template-columns: 1fr; }
-      aside { position: relative; height: auto; }
-      .hero, .dashboard, .lower { grid-template-columns: 1fr; }
-      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .motion-panel { grid-template-columns: 1fr; }
-      .now-card { border-left: 0; border-top: 1px solid var(--line); padding: 12px 0 0; }
+    /* Mobile & Responsive Rules */
+    .mobile-nav-actions { display: none; }
+    .desktop-only { display: block; }
+    .aside-panel { display: block; }
+    .mobile-swipe-hint { display: none; }
+
+    @media (max-width: 920px) {
+      .shell {
+        display: flex;
+        flex-direction: column;
+      }
+      aside {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        height: auto;
+        width: 100%;
+        padding: 10px 14px;
+        background: var(--ink);
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      }
+      .aside-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+      .brand {
+        margin-bottom: 0;
+        gap: 8px;
+      }
+      .brand strong {
+        font-size: 13px;
+        line-height: 1.2;
+      }
+      .mark {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+        border-radius: 6px;
+      }
+      .mobile-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-compact-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        background: #0284c7;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .btn-filter-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 10px;
+        background: rgba(255,255,255,0.14);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        min-height: 32px;
+        width: auto;
+      }
+      .btn-filter-toggle:active {
+        background: rgba(255,255,255,0.25);
+      }
+      .desktop-only {
+        display: none !important;
+      }
+      .aside-panel {
+        display: none;
+        max-height: 72vh;
+        overflow-y: auto;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,0.12);
+        margin-top: 10px;
+      }
+      .aside-panel.is-open {
+        display: block;
+      }
+
+      main {
+        padding: 16px 12px;
+        overflow-x: hidden;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+      .hero h1 {
+        font-size: clamp(22px, 5.5vw, 32px);
+        line-height: 1.15;
+      }
+      .hero .lede {
+        font-size: 13.5px;
+        line-height: 1.6;
+        margin-top: 8px;
+      }
+      .hero-card {
+        padding: 14px;
+        margin-top: 4px;
+      }
+      .hero-number {
+        font-size: clamp(34px, 8vw, 44px);
+      }
+      .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .card-body {
+        padding: 12px;
+      }
+      .card-body h3 {
+        font-size: 12px;
+        line-height: 1.35;
+      }
+      .metric {
+        font-size: clamp(19px, 4.5vw, 26px);
+        margin-top: 4px;
+      }
+      .delta {
+        font-size: 11px;
+        padding: 2px 6px;
+        margin-top: 6px;
+        gap: 3px;
+      }
+      .dashboard {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .chart-head {
+        flex-direction: column;
+        gap: 8px;
+        padding: 14px 14px 0;
+      }
+      .motion-panel {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin: 10px 10px 2px;
+        padding: 12px;
+      }
+      .now-card {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+        padding: 8px 0 0;
+      }
+      .chart-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 8px 8px;
+      }
+      .chart-wrap svg {
+        min-width: 660px;
+        height: 380px;
+      }
+      .insights {
+        gap: 10px;
+      }
+      .insight {
+        grid-template-columns: 36px 1fr;
+        gap: 10px;
+        padding: 12px;
+      }
+      .icon {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+      }
+      .insight h3 {
+        font-size: 14px;
+      }
+      .insight p {
+        font-size: 12.5px;
+        line-height: 1.55;
+      }
+      .lower {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 14px;
+      }
+      .event {
+        grid-template-columns: 75px 1fr;
+        gap: 10px;
+        padding: 10px 0;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-height: 480px;
+      }
+      table {
+        min-width: 580px;
+        font-size: 12.5px;
+      }
+      th, td {
+        padding: 8px 10px;
+      }
+      .mobile-swipe-hint {
+        display: inline-block;
+        background: #E0F2FE;
+        color: #0369A1;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 4px;
+        margin-top: 4px;
+      }
     }
 
-    @media (max-width: 640px) {
-      main, aside { padding: 18px; }
-      .kpis { grid-template-columns: 1fr; }
-      .hero-number { font-size: 38px; }
-      .event { grid-template-columns: 1fr; }
+    @media (max-width: 480px) {
+      .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .card-body {
+        padding: 10px;
+      }
+      .metric {
+        font-size: 18px;
+      }
+      .hero-number {
+        font-size: 32px;
+      }
+      .event {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <aside>
-      <div class="view-switch-banner" style="background: #0284c7; color: white; padding: 8px 12px; border-radius: 8px; margin-bottom: 14px; text-align: center; font-size: 13px; font-weight: bold;">
-  <a href="compact.html" style="color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
-    <span>📋 切換至 115Q3 速覽簡版 ➔</span>
-  </a>
-</div>
-    <div class="brand">
-        <div class="mark">IT</div>
-        <div>
-          <strong>資訊服務業<br>營業額儀表板</strong>
+      <div class="aside-bar">
+        <div class="brand">
+          <div class="mark">IT</div>
+          <div>
+            <strong>資訊服務業<br>營業額儀表板</strong>
+          </div>
+        </div>
+        <div class="mobile-nav-actions">
+          <a href="compact.html" class="btn-compact-pill">📋 速覽簡版</a>
+          <button id="toggleFilterBtn" class="btn-filter-toggle" type="button" aria-expanded="false" aria-controls="asideFilterPanel">
+            <span>⚙️ 篩選設定</span>
+            <span id="filterArrow" class="filter-arrow">▼</span>
+          </button>
         </div>
       </div>
 
-      <div class="nav-title">資料篩選</div>
-      <div class="filter">
-        <label for="startYear">起始年度</label>
-        <select id="startYear"></select>
-      </div>
-      <div class="filter">
-        <label for="endYear">結束年度</label>
-        <select id="endYear"></select>
-      </div>
-      <div class="filter">
-        <label for="viewMode">圖表模式</label>
-        <select id="viewMode">
-          <option value="quarterly">季度趨勢</option>
-          <option value="annual">年度加總</option>
-        </select>
+      <div class="desktop-only view-switch-banner" style="background: #0284c7; color: white; padding: 8px 12px; border-radius: 8px; margin-bottom: 14px; text-align: center; font-size: 13px; font-weight: bold;">
+        <a href="compact.html" style="color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <span>📋 切換至 115Q3 速覽簡版 ➔</span>
+        </a>
       </div>
 
-      <div class="nav-title">Google Sheet 介接</div>
-      <div class="filter">
-        <label for="sheetUrl">資料來源連結</label>
-        <input id="sheetUrl" placeholder="貼上 CSV 或 Google Sheet URL">
-        <button id="loadSheet">載入資料</button>
-        <button id="resetData" class="secondary">使用內建資料</button>
-        <div id="dataStatus" class="status">預設讀取 Google Sheet 即時資料庫；失敗時使用內建資料。</div>
-      </div>
-      <div class="source-box">
-        CSV 或 Google Sheet 欄位需包含：year、western_year、period、revenue_100m、yoy_pct、driver、source_note、type。
+      <div class="aside-panel" id="asideFilterPanel">
+        <div class="nav-title">資料篩選</div>
+        <div class="filter">
+          <label for="startYear">起始年度</label>
+          <select id="startYear"></select>
+        </div>
+        <div class="filter">
+          <label for="endYear">結束年度</label>
+          <select id="endYear"></select>
+        </div>
+        <div class="filter">
+          <label for="viewMode">圖表模式</label>
+          <select id="viewMode">
+            <option value="quarterly">季度趨勢</option>
+            <option value="annual">年度加總</option>
+          </select>
+        </div>
+
+        <div class="nav-title">Google Sheet 介接</div>
+        <div class="filter">
+          <label for="sheetUrl">資料來源連結</label>
+          <input id="sheetUrl" placeholder="貼上 CSV 或 Google Sheet URL">
+          <button id="loadSheet">載入資料</button>
+          <button id="resetData" class="secondary">使用內建資料</button>
+          <div id="dataStatus" class="status">預設讀取 Google Sheet 即時資料庫；失敗時使用內建資料。</div>
+        </div>
+        <div class="source-box">
+          CSV 或 Google Sheet 欄位需包含：year、western_year、period、revenue_100m、yoy_pct、driver、source_note、type。
+        </div>
       </div>
     </aside>
 
@@ -585,6 +825,7 @@
               <h2 id="chartTitle">季度營業額與年增率</h2>
               <h3 id="chartSubtitle">單位：億元；%</h3>
               <p class="source-note">註：114年起由數位發展部數位產業署統計；113年以前為經濟部統計處資料。</p>
+              <div class="mobile-swipe-hint">👈 手機可左右滑動檢視各季趨勢 👉</div>
             </div>
             <div class="legend">
               <span><i class="dot" style="background:var(--cyan)"></i>營業額</span>
@@ -677,6 +918,7 @@
               <p class="source-note">註：114年起由數位發展部數位產業署統計；113年以前為經濟部統計處資料。</p>
             </div>
           </div>
+          <div class="mobile-swipe-hint" style="margin: 0 18px 8px;">👈 手機可左右滑動查看完整報表 👉</div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -1375,6 +1617,18 @@
         startPlayback();
       }
     });
+
+    // Mobile filter drawer toggle
+    const filterToggleBtn = document.getElementById("toggleFilterBtn");
+    const asidePanel = document.getElementById("asideFilterPanel");
+    const filterArrow = document.getElementById("filterArrow");
+    if (filterToggleBtn && asidePanel) {
+      filterToggleBtn.addEventListener("click", () => {
+        const isOpen = asidePanel.classList.toggle("is-open");
+        filterToggleBtn.setAttribute("aria-expanded", isOpen);
+        if (filterArrow) filterArrow.textContent = isOpen ? "▲" : "▼";
+      });
+    }
 
     setupFilters();
     resetTimelineToEnd();
