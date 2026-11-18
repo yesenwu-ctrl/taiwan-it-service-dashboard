@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>臺灣電腦及資訊服務業營業額速覽 (115Q3 最新精簡版)</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --panel: #FFFFFF;
+      --ink: #0F172A;
+      --muted: #64748B;
+      --cyan: #0284C7;
+      --blue: #2563EB;
+      --green: #059669;
+      --red: #DC2626;
+      --line: #E2E8F0;
+      --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", Roboto, sans-serif;
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 18px;
+    }
+    .header-titles h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: #E0F2FE;
+      color: #0369A1;
+      font-size: 13px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .btn-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--cyan);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+      transition: background 0.2s;
+    }
+    .btn-switch:hover {
+      background: #0369A1;
+    }
+
+    /* KPI Cards */
+    .grid-kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--panel);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kpi-title {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .kpi-num {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--ink);
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .kpi-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 10px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      align-self: flex-start;
+    }
+    .trend-up { background: #ECFDF5; color: var(--green); }
+    .trend-highlight { background: #FEF3C7; color: #B45309; }
+
+    /* Chart Card */
+    .chart-card {
+      background: var(--panel);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      height: 160px;
+      padding-top: 24px;
+      margin-top: 10px;
+      border-bottom: 2px solid var(--line);
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      position: relative;
+    }
+    .bar-val {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .bar-pillar {
+      width: 100%;
+      max-width: 44px;
+      border-radius: 6px 6px 0 0;
+      background: #CBD5E1;
+      transition: height 0.3s ease;
+    }
+    .bar-col.active .bar-pillar {
+      background: linear-gradient(180deg, #0284C7 0%, #2563EB 100%);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+    .bar-col.active .bar-val {
+      color: var(--blue);
+      font-weight: 800;
+    }
+    .bar-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* Main Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1.2fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 860px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--panel);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .card-head {
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+    th {
+      background: #F8FAFC;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+    }
+    td.num, th.num { text-align: right; }
+    tr:last-child td { border-bottom: none; }
+    tr.highlight {
+      background: #F0FDF4;
+      font-weight: 800;
+      color: #166534;
+    }
+
+    .insights-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .insight-item {
+      padding: 12px 14px;
+      background: #F8FAFC;
+      border-radius: 8px;
+      border-left: 4px solid var(--blue);
+    }
+    .insight-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ink);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .insight-desc {
+      font-size: 12.5px;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+    .footer a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-titles">
+        <h1>臺灣電腦及資訊服務業營業額速覽 <span class="badge">115年第3季最新</span></h1>
+        <p class="subtitle">主管機關：數位發展部數位產業署官方統計公布（115年11月）</p>
+      </div>
+      <div>
+        <a href="index.html" class="btn-switch">切換至完整分析版儀表板 ➔</a>
+      </div>
+    </header>
+
+    <!-- Top 4 KPIs -->
+    <section class="grid-kpi">
+      <div class="kpi-card">
+        <div class="kpi-title">115Q3 電腦及資訊服務業總營業額</div>
+        <div class="kpi-num">1,960.8 <span style="font-size:16px; font-weight:600; color:var(--muted)">億元</span></div>
+        <div class="kpi-trend trend-up">↑ 19.82% YoY（創歷年單季新高）</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">電腦程式設計、諮詢服務業</div>
+        <div class="kpi-num">1,464.1 <span style="font-size:16px; font-weight:600; color:var(--muted)">億元</span></div>
+        <div class="kpi-trend trend-up">↑ 20.20% YoY（佔比 74.7%）</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">資訊處理、主機及網站代管服務業</div>
+        <div class="kpi-num">496.7 <span style="font-size:16px; font-weight:600; color:var(--muted)">億元</span></div>
+        <div class="kpi-trend trend-up">↑ 18.72% YoY（佔比 25.3%）</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">115年前三季累計營業額</div>
+        <div class="kpi-num">5,407.3 <span style="font-size:16px; font-weight:600; color:var(--muted)">億元</span></div>
+        <div class="kpi-trend trend-highlight">↑ 15.32% YoY（全年度將破7千億）</div>
+      </div>
+    </section>
+
+    <!-- Visual Trend Bar Chart -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div class="card-title">近 7 季營業額走勢趨勢圖 (億元新台幣)</div>
+        <span style="font-size:12px; color:var(--muted)">歷史單季突破 1,960 億大關</span>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-col">
+          <div class="bar-val">1,496.5</div>
+          <div class="bar-pillar" style="height: 60%;"></div>
+          <div class="bar-label">114Q1</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val">1,555.8</div>
+          <div class="bar-pillar" style="height: 64%;"></div>
+          <div class="bar-label">114Q2</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val">1,636.5</div>
+          <div class="bar-pillar" style="height: 68%;"></div>
+          <div class="bar-label">114Q3</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val">1,907.1</div>
+          <div class="bar-pillar" style="height: 82%;"></div>
+          <div class="bar-label">114Q4</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val">1,679.3</div>
+          <div class="bar-pillar" style="height: 70%;"></div>
+          <div class="bar-label">115Q1</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val">1,767.2</div>
+          <div class="bar-pillar" style="height: 75%;"></div>
+          <div class="bar-label">115Q2</div>
+        </div>
+        <div class="bar-col active">
+          <div class="bar-val">1,960.8</div>
+          <div class="bar-pillar" style="height: 90%;"></div>
+          <div class="bar-label">115Q3 (最新)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-grid">
+      <!-- Left Table: Recent Quarters Comparison -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">各季度數據對照表</div>
+          <span style="font-size:12px; color:var(--muted)">單位：億元、%</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>年度季度</th>
+              <th class="num">營業總額</th>
+              <th class="num">年增率 (YoY)</th>
+              <th class="num">季增率 (QoQ)</th>
+              <th>主要成長動能特徵</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>114年 Q1</td>
+              <td class="num">1,496.5</td>
+              <td class="num">+5.31%</td>
+              <td class="num">-14.24%</td>
+              <td>資安法規要求、基礎軟體授權</td>
+            </tr>
+            <tr>
+              <td>114年 Q2</td>
+              <td class="num">1,555.8</td>
+              <td class="num">+6.87%</td>
+              <td class="num">+3.96%</td>
+              <td>混合雲建置、數位轉型深化</td>
+            </tr>
+            <tr>
+              <td>114年 Q3</td>
+              <td class="num">1,636.5</td>
+              <td class="num">+10.44%</td>
+              <td class="num">+5.18%</td>
+              <td>線上遊戲與雲端主機擴充</td>
+            </tr>
+            <tr>
+              <td>114年 Q4</td>
+              <td class="num">1,907.1</td>
+              <td class="num">+9.29%</td>
+              <td class="num">+16.54%</td>
+              <td>年度預算驗收與AI專案驗收高峰</td>
+            </tr>
+            <tr>
+              <td>115年 Q1</td>
+              <td class="num">1,679.3</td>
+              <td class="num">+12.21%</td>
+              <td class="num">-11.95%</td>
+              <td>多雲託管、資安監控、信任科技</td>
+            </tr>
+            <tr>
+              <td>115年 Q2</td>
+              <td class="num">1,767.2</td>
+              <td class="num">+13.59%</td>
+              <td class="num">+5.23%</td>
+              <td>企業流程AI化、Agentic 應用試行</td>
+            </tr>
+            <tr class="highlight">
+              <td>115年 Q3 (最新)</td>
+              <td class="num">1,960.8</td>
+              <td class="num">+19.82%</td>
+              <td class="num">+10.96%</td>
+              <td>半導體AI基建、公部門大型雲端驗收</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Right Insights: 4 Core Drivers -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">115Q3 成長四大核心動能</div>
+        </div>
+        <div class="insights-list">
+          <div class="insight-item">
+            <div class="insight-title">🚀 1. 半導體與先進製造 AI 基建擴建</div>
+            <div class="insight-desc">台積電等半導體及供應鏈大廠持續擴充先進製程與封裝產能，帶動資料中心、智慧廠務自動化及 IT/OT 整合高額軟硬體採購。</div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-title">🏛️ 2. 公部門大型雲端專案集中認列</div>
+            <div class="insight-desc">國防部「雲端資訊服務授權」等百億級政府授權案，及公部門多項跨年度大型系統陸續於本季完成交付驗收，顯著挹注營收。</div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-title">🤖 3. 企業 AI 應用全面落地與算力服務</div>
+            <div class="insight-desc">代理式 AI（Agentic AI）由 PoC 擴大至製造與金融生產系統；龐大推理算力需求推升雲端代理託管與 AI 算力訂閱爆發成長。</div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-title">🛡️ 4. 嚴格法規驅動資安治理剛性需求</div>
+            <div class="insight-desc">上市櫃資安治理新規及關鍵基礎設施 OT 資安規範上路，帶動 24/7 SOC 監控、紅隊演練與防護長約需求持續攀升。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      本儀表板資料源自數位發展部數位產業署官方調查結果 · 同步提供 <a href="index.html">完整互動版儀表板</a>
+    </div>
+  </div>
+</body>
+</html>
