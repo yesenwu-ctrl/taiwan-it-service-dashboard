@@ -2,11 +2,1379 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0; url=/dashboard">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>臺灣電腦及資訊服務業營業額儀表板</title>
+  <style>
+    :root {
+      --bg: #F6F8FB;
+      --panel: #ffffff;
+      --panel-2: #EEF3F8;
+      --ink: #111827;
+      --muted: #64748B;
+      --line: rgba(17,24,39,.12);
+      --cyan: #0A84FF;
+      --green: #47C7A8;
+      --amber: #0A84FF;
+      --rose: #47C7A8;
+      --violet: #111827;
+      --shadow: 0 18px 50px rgba(17,24,39,.10);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    aside {
+      border-right: 1px solid rgba(255,255,255,.10);
+      padding: 28px 22px;
+      background: var(--ink);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      color: #F6F8FB;
+    }
+
+    aside label,
+    aside .nav-title,
+    aside .source-box,
+    aside .status {
+      color: rgba(246,248,251,.72);
+    }
+
+    aside .filter,
+    aside .source-box {
+      border-color: rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+    }
+
+    main {
+      padding: 28px;
+      overflow: hidden;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      display: grid;
+      place-items: center;
+      color: #F6F8FB;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      font-size: clamp(28px, 4vw, 54px);
+      line-height: 1.02;
+      max-width: 980px;
+      letter-spacing: 0;
+    }
+    h2 { font-size: 20px; margin-bottom: 16px; }
+    h3 { font-size: 15px; color: var(--muted); font-weight: 650; }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 750;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .lede {
+      color: #475569;
+      max-width: 850px;
+      margin-top: 16px;
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    .nav-title {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      margin: 28px 0 12px;
+    }
+
+    .filter, .source-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(255,255,255,.06);
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    select, input {
+      width: 100%;
+      min-height: 38px;
+      background: #ffffff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 10px;
+      font: inherit;
+    }
+
+    button {
+      width: 100%;
+      min-height: 40px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--cyan);
+      color: #ffffff;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: #F6F8FB;
+      border: 1px solid var(--line);
+      margin-top: 8px;
+    }
+
+    .source-box {
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 24px;
+    }
+
+    .hero-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-number {
+      font-size: 48px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .hero-caption {
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .kpis {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-body { padding: 18px; }
+
+    .metric {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 900;
+      margin-top: 10px;
+    }
+
+    .delta {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 12px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(71,199,168,.16);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .dashboard {
+      grid-template-columns: minmax(0, 1.65fr) minmax(300px, .85fr);
+      align-items: start;
+    }
+
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      padding: 18px 18px 0;
+    }
+
+    .chart-wrap {
+      padding: 0 12px 12px;
+      min-height: 430px;
+    }
+
+    svg { width: 100%; height: auto; display: block; }
+
+    .yoy-point {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .yoy-point .tooltip-box,
+    .yoy-point .tooltip-text {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .14s ease;
+    }
+
+    .yoy-point:hover .tooltip-box,
+    .yoy-point:hover .tooltip-text,
+    .yoy-point:focus .tooltip-box,
+    .yoy-point:focus .tooltip-text,
+    .yoy-point:focus-visible .tooltip-box,
+    .yoy-point:focus-visible .tooltip-text {
+      opacity: 1;
+    }
+
+    .yoy-hit {
+      fill: transparent;
+    }
+
+    .motion-panel {
+      display: grid;
+      grid-template-columns: 112px 150px minmax(0, 1fr) 210px;
+      gap: 14px;
+      align-items: center;
+      margin: 14px 18px 2px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .play-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .play-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      background: rgba(6,16,24,.14);
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .range-block {
+      min-width: 0;
+    }
+
+    .range-control + .range-control {
+      margin-top: 8px;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .range-row span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .scope-block {
+      min-width: 0;
+    }
+
+    .range-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      min-height: 24px;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+
+    .now-card {
+      min-width: 0;
+      border-left: 1px solid var(--line);
+      padding-left: 14px;
+    }
+
+    .now-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .now-value {
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .now-detail {
+      color: #475569;
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .source-note {
+      margin-top: 6px;
+      color: #64748B;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .insights {
+      display: grid;
+      gap: 12px;
+    }
+
+    .insight {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: #F6F8FB;
+    }
+
+    .insight p {
+      color: #475569;
+      line-height: 1.6;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .lower {
+      grid-template-columns: 1fr 1fr;
+      margin-top: 16px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .event:last-child { border-bottom: 0; }
+    .event strong { color: var(--amber); }
+    .event p { color: #475569; line-height: 1.6; font-size: 13px; }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: 410px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #EEF3F8;
+      color: var(--muted);
+      z-index: 2;
+    }
+
+    td.num, th.num { text-align: right; }
+
+    .status {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1100px) {
+      .shell { grid-template-columns: 1fr; }
+      aside { position: relative; height: auto; }
+      .hero, .dashboard, .lower { grid-template-columns: 1fr; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .motion-panel { grid-template-columns: 1fr; }
+      .now-card { border-left: 0; border-top: 1px solid var(--line); padding: 12px 0 0; }
+    }
+
+    @media (max-width: 640px) {
+      main, aside { padding: 18px; }
+      .kpis { grid-template-columns: 1fr; }
+      .hero-number { font-size: 38px; }
+      .event { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <p><a href="/dashboard">前往儀表板</a></p>
+  <div class="shell">
+    <aside>
+      <div class="brand">
+        <div class="mark">IT</div>
+        <div>
+          <strong>資訊服務業<br>營業額儀表板</strong>
+        </div>
+      </div>
+
+      <div class="nav-title">資料篩選</div>
+      <div class="filter">
+        <label for="startYear">起始年度</label>
+        <select id="startYear"></select>
+      </div>
+      <div class="filter">
+        <label for="endYear">結束年度</label>
+        <select id="endYear"></select>
+      </div>
+      <div class="filter">
+        <label for="viewMode">圖表模式</label>
+        <select id="viewMode">
+          <option value="quarterly">季度趨勢</option>
+          <option value="annual">年度加總</option>
+        </select>
+      </div>
+
+      <div class="nav-title">Google Sheet 介接</div>
+      <div class="filter">
+        <label for="sheetUrl">資料來源連結</label>
+        <input id="sheetUrl" placeholder="貼上 CSV 或 Google Sheet URL">
+        <button id="loadSheet">載入資料</button>
+        <button id="resetData" class="secondary">使用內建資料</button>
+        <div id="dataStatus" class="status">預設讀取 Google Sheet 即時資料庫；失敗時使用內建資料。</div>
+      </div>
+      <div class="source-box">
+        CSV 或 Google Sheet 欄位需包含：year、western_year、period、revenue_100m、yoy_pct、driver、source_note、type。
+      </div>
+    </aside>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">2015-2026 Taiwan Digital Economy</div>
+          <h1>臺灣電腦及資訊服務業營業額長期趨勢</h1>
+          <p class="lede">以近十年官方統計整理為基礎，更新至115年第3季，呈現營業額翻倍、第四季高峰、疫情後 AI 與資安接棒成長等關鍵脈絡。</p>
+        </div>
+        <div class="hero-card">
+          <h3 id="headlineTitle">最新期營業額</h3>
+          <div class="hero-number" id="headlineRevenue">1,679.3</div>
+          <div class="hero-caption" id="headlineCaption">億元新台幣，資料載入後自動更新。</div>
+        </div>
+      </section>
+
+      <section class="grid kpis">
+        <div class="card"><div class="card-body"><h3 id="kpiTitle1">當年營業額</h3><div class="metric" id="growthMultiple">6,596</div><span class="delta" id="growthDelta">114年全年</span></div></div>
+        <div class="card"><div class="card-body"><h3 id="kpiTitle2">當年年增率</h3><div class="metric" id="cagr">8.1%</div><span class="delta" id="cagrDelta">較113年</span></div></div>
+        <div class="card"><div class="card-body"><h3 id="kpiTitle3">當年高峰季度</h3><div class="metric" id="latestQuarter">Q4</div><span class="delta" id="latestYoy">1,907 億元</span></div></div>
+        <div class="card"><div class="card-body"><h3 id="kpiTitle4">Q4占全年</h3><div class="metric" id="q4Peak">28.9%</div><span class="delta" id="q4Delta">Q4營業額占全年比重</span></div></div>
+      </section>
+
+      <section class="grid dashboard">
+        <div class="card">
+          <div class="chart-head">
+            <div>
+              <h2 id="chartTitle">季度營業額與年增率</h2>
+              <h3 id="chartSubtitle">單位：億元；%</h3>
+              <p class="source-note">註：114年起由數位發展部數位產業署統計；113年以前為經濟部統計處資料。</p>
+            </div>
+            <div class="legend">
+              <span><i class="dot" style="background:var(--cyan)"></i>營業額</span>
+              <span><i class="dot" style="background:var(--rose)"></i>年增率</span>
+            </div>
+          </div>
+          <div class="motion-panel" aria-label="時間播放控制">
+            <button id="playTimeline" class="play-button" type="button">
+              <span id="playIcon" class="play-icon">▶</span>
+              <span id="playText">播放</span>
+            </button>
+            <div class="scope-block">
+              <label for="playScope">播放範圍</label>
+              <select id="playScope">
+                <option value="cumulative">全時段累進</option>
+                <option value="yearly">分年檢視</option>
+              </select>
+            </div>
+            <div class="range-block">
+              <label for="timelineSlider" id="timelineLabel">動態時間拉桿</label>
+              <div class="range-control" id="timelineStartControl">
+                <div class="range-row">
+                  <span>起始點</span>
+                  <input id="timelineStartSlider" type="range" min="0" max="0" value="0" step="1">
+                </div>
+              </div>
+              <div class="range-control">
+                <div class="range-row">
+                  <span id="timelineEndLabel">播放至</span>
+                  <input id="timelineSlider" type="range" min="0" max="0" value="0" step="1">
+                </div>
+              </div>
+              <div class="range-meta">
+                <span id="rangeStart">起點</span>
+                <span id="rangeEnd">終點</span>
+              </div>
+            </div>
+            <div class="now-card">
+              <div class="now-label" id="nowLabel">目前播放至</div>
+              <div id="currentPeriod" class="now-value">-</div>
+              <div id="currentDetail" class="now-detail">拖曳拉桿或按播放查看趨勢。</div>
+            </div>
+          </div>
+          <div id="mainChart" class="chart-wrap"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h2>關鍵解讀</h2>
+            <div class="insights">
+              <div class="insight">
+                <div class="icon" style="background:var(--cyan)">1</div>
+                <div><h3>115Q3創歷年單季新高</h3><p>115年第3季營業額達1,960.8億元，年增19.82%，連續3季雙位數成長，半導體與高科技AI基建加速推升營收。</p></div>
+              </div>
+              <div class="insight">
+                <div class="icon" style="background:var(--amber)">2</div>
+                <div><h3>程式設計業成長破2成</h3><p>電腦程式設計、諮詢及相關服務業營業額1,464.1億元，年增20.20%，受惠AI基礎設施、先進製程產能擴充、廠務自動化及大型雲端專案認列。</p></div>
+              </div>
+              <div class="insight">
+                <div class="icon" style="background:var(--green)">3</div>
+                <div><h3>資訊服務業年增達18.7%</h3><p>資訊服務業營業額496.7億元，年增18.72%，企業AI應用陸續上線帶動雲端託管、AI算力服務擴增，資安監控與資料交換亦同步增溫。</p></div>
+              </div>
+              <div class="insight">
+                <div class="icon" style="background:var(--violet)">4</div>
+                <div><h3>前三季突破5,400億元</h3><p>115年前三季累計營業額達5,407.3億元，年增15.32%，第四季逢政府與企業專案驗收旺季及國家級AI算力推進，預期動能持續。</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid lower">
+        <div class="card">
+          <div class="card-body">
+            <h2>成長驅動節點</h2>
+            <div class="timeline">
+              <div class="event"><strong>108-109</strong><p>電商活動、網路數據交換、資安需求提高，產業進入穩定擴張階段。</p></div>
+              <div class="event"><strong>109-111</strong><p>疫情帶動遠距辦公、線上服務、雲端資料處理，營收出現跳升。</p></div>
+              <div class="event"><strong>112-113</strong><p>高效能運算、系統整合、平台與資料代管需求延續，Q4旺季特徵更加明顯。</p></div>
+              <div class="event"><strong>114-115Q3</strong><p>Agentic AI、雲端導入、資料治理、系統整合與資安監控需求成為主要動能。</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="chart-head">
+            <div>
+              <h2>資料明細</h2>
+              <h3>依目前篩選條件顯示</h3>
+              <p class="source-note">註：114年起由數位發展部數位產業署統計；113年以前為經濟部統計處資料。</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>年度</th>
+                  <th>期間</th>
+                  <th class="num">營業額</th>
+                  <th class="num">YoY</th>
+                  <th>主要動能</th>
+                </tr>
+              </thead>
+              <tbody id="dataRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const embeddedData = [
+      {year:104, western_year:2015, period:"全年", revenue_100m:3007.0, yoy_pct:2.40, driver:"行動網路與雲端服務初期普及", source_note:"經濟部統計處", type:"annual"},
+      {year:105, western_year:2016, period:"全年", revenue_100m:3157.0, yoy_pct:5.00, driver:"行動網路與雲端服務初期普及", source_note:"經濟部統計處", type:"annual"},
+      {year:106, western_year:2017, period:"全年", revenue_100m:3323.0, yoy_pct:5.30, driver:"網路資安意識提高與雲端服務普及", source_note:"經濟部統計處", type:"annual"},
+      {year:107, western_year:2018, period:"Q1", revenue_100m:824.0, yoy_pct:null, driver:"雲端建構需求殷切", source_note:"經濟部統計處", type:"quarterly"},
+      {year:107, western_year:2018, period:"Q2", revenue_100m:801.0, yoy_pct:null, driver:"雲端建構需求殷切", source_note:"經濟部統計處", type:"quarterly"},
+      {year:107, western_year:2018, period:"Q3", revenue_100m:843.0, yoy_pct:null, driver:"雲端建構需求殷切", source_note:"經濟部統計處", type:"quarterly"},
+      {year:107, western_year:2018, period:"Q4", revenue_100m:998.0, yoy_pct:null, driver:"全年達3467億元；雲端建構需求殷切", source_note:"經濟部統計處", type:"quarterly"},
+      {year:108, western_year:2019, period:"Q1", revenue_100m:845.0, yoy_pct:2.60, driver:"企業用戶整合電腦軟硬體與通訊技術服務增加", source_note:"經濟部統計處", type:"quarterly"},
+      {year:108, western_year:2019, period:"Q2", revenue_100m:892.0, yoy_pct:11.40, driver:"網路數據交換應用需求成長", source_note:"經濟部統計處", type:"quarterly"},
+      {year:108, western_year:2019, period:"Q3", revenue_100m:948.0, yoy_pct:12.40, driver:"交友社群平台廣告效益及網站管理業務成長", source_note:"經濟部統計處", type:"quarterly"},
+      {year:108, western_year:2019, period:"Q4", revenue_100m:1118.0, yoy_pct:12.00, driver:"電商雙11雙12促銷與資訊安全需求成長", source_note:"經濟部統計處", type:"quarterly"},
+      {year:109, western_year:2020, period:"Q1", revenue_100m:908.0, yoy_pct:7.30, driver:"5G通訊技術及網路資安服務需求增加", source_note:"經濟部統計處", type:"quarterly"},
+      {year:109, western_year:2020, period:"Q2", revenue_100m:953.0, yoy_pct:6.80, driver:"代客處理電子資料交換業績成長", source_note:"經濟部統計處", type:"quarterly"},
+      {year:109, western_year:2020, period:"Q3", revenue_100m:996.0, yoy_pct:5.10, driver:"疫情帶動宅經濟服務需求與雲端資料處理成長", source_note:"經濟部統計處", type:"quarterly"},
+      {year:109, western_year:2020, period:"Q4", revenue_100m:1179.0, yoy_pct:5.50, driver:"疫情推升網路銷售熱潮與網站管理備份系統成長", source_note:"經濟部統計處", type:"quarterly"},
+      {year:110, western_year:2021, period:"Q1", revenue_100m:1034.0, yoy_pct:13.90, driver:"金融機構多元整合服務需求殷切", source_note:"經濟部統計處", type:"quarterly"},
+      {year:110, western_year:2021, period:"Q2", revenue_100m:1057.0, yoy_pct:11.00, driver:"遠距辦公推升資安防護及網路架構需求", source_note:"經濟部統計處", type:"quarterly"},
+      {year:110, western_year:2021, period:"Q3", revenue_100m:1130.0, yoy_pct:13.50, driver:"企業規劃網路資安與網路儲存伺服器系統建置倍增", source_note:"經濟部統計處", type:"quarterly"},
+      {year:110, western_year:2021, period:"Q4", revenue_100m:1355.0, yoy_pct:12.03, driver:"網路數據交換與5G整合建置", source_note:"經濟部統計處", type:"quarterly"},
+      {year:111, western_year:2022, period:"Q1", revenue_100m:1179.0, yoy_pct:10.34, driver:"物聯網等智慧化應用擴散", source_note:"經濟部統計處", type:"quarterly"},
+      {year:111, western_year:2022, period:"Q2", revenue_100m:1291.0, yoy_pct:18.15, driver:"全年年增15.5%；數位轉型商機推展", source_note:"經濟部統計處", type:"quarterly"},
+      {year:111, western_year:2022, period:"Q3", revenue_100m:1338.0, yoy_pct:14.56, driver:"數位轉型商機持續推展", source_note:"經濟部統計處", type:"quarterly"},
+      {year:111, western_year:2022, period:"Q4", revenue_100m:1561.0, yoy_pct:15.22, driver:"企業軟硬體整合設計與5G通訊技術業績攀升", source_note:"經濟部統計處", type:"quarterly"},
+      {year:112, western_year:2023, period:"Q1", revenue_100m:1331.0, yoy_pct:12.93, driver:"高效能運算與雲端資料處理推升需求", source_note:"經濟部統計處", type:"quarterly"},
+      {year:112, western_year:2023, period:"Q2", revenue_100m:1386.0, yoy_pct:7.36, driver:"資安設備建構案增加", source_note:"經濟部統計處", type:"quarterly"},
+      {year:112, western_year:2023, period:"Q3", revenue_100m:1398.0, yoy_pct:4.51, driver:"拍賣平台業者多元行銷策略奏效", source_note:"經濟部統計處", type:"quarterly"},
+      {year:112, western_year:2023, period:"Q4", revenue_100m:1657.0, yoy_pct:6.14, driver:"全年累計5235億元；企業資訊系統需求活絡", source_note:"經濟部統計處", type:"quarterly"},
+      {year:113, western_year:2024, period:"Q1", revenue_100m:1421.0, yoy_pct:6.75, driver:"遊戲平台網站業績攀升與多元整合服務增加", source_note:"經濟部統計處", type:"quarterly"},
+      {year:113, western_year:2024, period:"Q2", revenue_100m:1455.8, yoy_pct:5.03, driver:"系統整合建置接單暢旺", source_note:"經濟部統計處", type:"quarterly"},
+      {year:113, western_year:2024, period:"Q3", revenue_100m:1481.8, yoy_pct:5.97, driver:"線上遊戲平台與雲端資料代管服務擴增", source_note:"經濟部統計處", type:"quarterly"},
+      {year:113, western_year:2024, period:"Q4", revenue_100m:1745.0, yoy_pct:5.34, driver:"系統整合建置及軟硬體設備服務需求增加", source_note:"經濟部統計處", type:"quarterly"},
+      {year:114, western_year:2025, period:"Q1", revenue_100m:1496.5, yoy_pct:5.31, driver:"資安法修訂推升合規需求；Chatbot與RAG導入", source_note:"數位發展部數位產業署", type:"quarterly"},
+      {year:114, western_year:2025, period:"Q2", revenue_100m:1555.8, yoy_pct:6.87, driver:"企業深化AI Agent與混合雲託管需求", source_note:"數位發展部數位產業署", type:"quarterly"},
+      {year:114, western_year:2025, period:"Q3", revenue_100m:1636.5, yoy_pct:10.44, driver:"雲端化與AI轉型加速；遊戲產業擴大雲端基礎建設", source_note:"數位發展部數位產業署", type:"quarterly"},
+      {year:114, western_year:2025, period:"Q4", revenue_100m:1907.1, yoy_pct:9.29, driver:"企業導入AI及數位治理；半導體跨境營運擴大", source_note:"數位發展部數位產業署", type:"quarterly"},
+      {year:115, western_year:2026, period:"Q1", revenue_100m:1679.3, yoy_pct:12.21, driver:"AI Agent、多雲託管、資安監控、防詐信任科技及AI治理需求擴張", source_note:"數位發展部數位產業署", type:"quarterly"},
+      {year:115, western_year:2026, period:"Q2", revenue_100m:1767.2, yoy_pct:13.59, driver:"Agentic AI導入企業流程；AI專案、系統整合、雲端服務與系統維運需求增加", source_note:"數位發展部數位產業署", type:"quarterly"},
+      {year:115, western_year:2026, period:"Q3", revenue_100m:1960.8, yoy_pct:19.82, driver:"半導體及高科技製造業擴建AI基礎設施與擴充產能；政府大型專案認列與企業AI應用推升雲端算力需求", source_note:"數位發展部數位產業署", type:"quarterly"}
+    ];
+
+    const defaultSheetUrl = "https://docs.google.com/spreadsheets/d/1fR-Jx86Zs1cDT_WGuwenN-zegntq3jLgmioqzK6Q7qE/gviz/tq?gid=0";
+    let activeData = [...embeddedData];
+    let timelineStartIndex = 0;
+    let timelineIndex = 0;
+    let isPlaying = false;
+    let playTimer = null;
+    const els = {
+      startYear: document.querySelector("#startYear"),
+      endYear: document.querySelector("#endYear"),
+      viewMode: document.querySelector("#viewMode"),
+      mainChart: document.querySelector("#mainChart"),
+      dataRows: document.querySelector("#dataRows"),
+      sheetUrl: document.querySelector("#sheetUrl"),
+      dataStatus: document.querySelector("#dataStatus"),
+      chartTitle: document.querySelector("#chartTitle"),
+      headlineTitle: document.querySelector("#headlineTitle"),
+      headlineRevenue: document.querySelector("#headlineRevenue"),
+      headlineCaption: document.querySelector("#headlineCaption"),
+      kpiTitle1: document.querySelector("#kpiTitle1"),
+      kpiTitle2: document.querySelector("#kpiTitle2"),
+      kpiTitle3: document.querySelector("#kpiTitle3"),
+      kpiTitle4: document.querySelector("#kpiTitle4"),
+      growthMultiple: document.querySelector("#growthMultiple"),
+      growthDelta: document.querySelector("#growthDelta"),
+      cagr: document.querySelector("#cagr"),
+      cagrDelta: document.querySelector("#cagrDelta"),
+      latestQuarter: document.querySelector("#latestQuarter"),
+      latestYoy: document.querySelector("#latestYoy"),
+      q4Peak: document.querySelector("#q4Peak"),
+      q4Delta: document.querySelector("#q4Delta"),
+      playTimeline: document.querySelector("#playTimeline"),
+      playScope: document.querySelector("#playScope"),
+      playIcon: document.querySelector("#playIcon"),
+      playText: document.querySelector("#playText"),
+      timelineLabel: document.querySelector("#timelineLabel"),
+      timelineStartControl: document.querySelector("#timelineStartControl"),
+      timelineStartSlider: document.querySelector("#timelineStartSlider"),
+      timelineEndLabel: document.querySelector("#timelineEndLabel"),
+      timelineSlider: document.querySelector("#timelineSlider"),
+      rangeStart: document.querySelector("#rangeStart"),
+      rangeEnd: document.querySelector("#rangeEnd"),
+      nowLabel: document.querySelector("#nowLabel"),
+      currentPeriod: document.querySelector("#currentPeriod"),
+      currentDetail: document.querySelector("#currentDetail")
+    };
+
+    function formatNumber(value, digits = 0) {
+      return Number(value).toLocaleString("zh-TW", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+    }
+
+    function parseCsv(text) {
+      const rows = text.trim().split(/\r?\n/).map(row => {
+        const cells = [];
+        let current = "";
+        let quoted = false;
+        for (let i = 0; i < row.length; i++) {
+          const char = row[i];
+          if (char === '"') quoted = !quoted;
+          else if (char === "," && !quoted) { cells.push(current); current = ""; }
+          else current += char;
+        }
+        cells.push(current);
+        return cells.map(cell => cell.trim());
+      });
+      const headers = rows.shift();
+      return rows.map(row => Object.fromEntries(headers.map((header, index) => [header, row[index] ?? ""]))).map(normalizeRecord);
+    }
+
+    function normalizeRecord(row) {
+      return {
+        year: Number(row.year),
+        western_year: Number(row.western_year),
+        period: row.period,
+        revenue_100m: Number(row.revenue_100m),
+        yoy_pct: row.yoy_pct === "" || row.yoy_pct == null ? null : Number(row.yoy_pct),
+        driver: row.driver || "",
+        source_note: row.source_note || "",
+        type: row.type || (row.period === "全年" ? "annual" : "quarterly")
+      };
+    }
+
+    function recordsFromGviz(data) {
+      const headers = data.table.cols.map(col => col.label);
+      return data.table.rows.map(row => {
+        const raw = Object.fromEntries(headers.map((header, index) => [header, row.c[index]?.v ?? ""]));
+        return normalizeRecord(raw);
+      });
+    }
+
+    function toGvizUrl(url, callbackName) {
+      const idMatch = url.match(/\/spreadsheets\/d\/([^/]+)/);
+      if (!idMatch) return null;
+      const gidMatch = url.match(/[?&]gid=([^&]+)/);
+      const gid = gidMatch ? gidMatch[1] : "0";
+      return `https://docs.google.com/spreadsheets/d/${idMatch[1]}/gviz/tq?gid=${encodeURIComponent(gid)}&tqx=responseHandler:${callbackName}`;
+    }
+
+    function loadGoogleSheet(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `sheetCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const gvizUrl = toGvizUrl(url, callbackName);
+        if (!gvizUrl) {
+          reject(new Error("不是有效的 Google Sheet 連結"));
+          return;
+        }
+        const script = document.createElement("script");
+        const timer = window.setTimeout(() => {
+          cleanup();
+          reject(new Error("Google Sheet 載入逾時"));
+        }, 10000);
+        function cleanup() {
+          window.clearTimeout(timer);
+          delete window[callbackName];
+          script.remove();
+        }
+        window[callbackName] = data => {
+          cleanup();
+          if (data.status !== "ok") {
+            reject(new Error(data.errors?.[0]?.detailed_message || data.status || "Google Sheet 回傳錯誤"));
+            return;
+          }
+          resolve(recordsFromGviz(data));
+        };
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("無法載入 Google Sheet"));
+        };
+        script.src = gvizUrl;
+        document.body.appendChild(script);
+      });
+    }
+
+    function getYearOptions(data, mode = els.viewMode.value) {
+      const source = mode === "annual" ? annualize(data) : data.filter(d => d.type === "quarterly");
+      return [...new Set(source.map(d => d.year))].sort((a, b) => a - b);
+    }
+
+    function setupFilters(preserve = false) {
+      const currentStart = Number(els.startYear.value);
+      const currentEnd = Number(els.endYear.value);
+      const years = getYearOptions(activeData);
+      els.startYear.innerHTML = years.map(y => `<option value="${y}">${y}年</option>`).join("");
+      els.endYear.innerHTML = years.map(y => `<option value="${y}">${y}年</option>`).join("");
+      els.startYear.value = preserve && years.includes(currentStart) ? currentStart : years[0];
+      els.endYear.value = preserve && years.includes(currentEnd) ? currentEnd : years[years.length - 1];
+    }
+
+    function annualize(data) {
+      const annualRows = data.filter(d => d.type === "annual");
+      const grouped = new Map();
+      data.filter(d => d.type === "quarterly").forEach(d => {
+        if (!grouped.has(d.year)) grouped.set(d.year, { ...d, period: "全年", revenue_100m: 0, yoy_pct: null, type: "annualized", quarter_count: 0 });
+        const row = grouped.get(d.year);
+        row.revenue_100m += d.revenue_100m;
+        row.western_year = d.western_year;
+        row.driver = "季度資料加總";
+        row.quarter_count += 1;
+      });
+      const completeAnnualized = [...grouped.values()].filter(row => row.quarter_count === 4);
+      const combined = [...annualRows, ...completeAnnualized].sort((a, b) => a.year - b.year);
+      for (let i = 1; i < combined.length; i++) {
+        if (combined[i].yoy_pct == null && combined[i - 1].revenue_100m) {
+          combined[i].yoy_pct = (combined[i].revenue_100m / combined[i - 1].revenue_100m - 1) * 100;
+        }
+      }
+      return combined;
+    }
+
+    function yearSummary(year) {
+      const annual = annualize(activeData).find(d => d.year === year);
+      if (annual) return { ...annual, complete: true, label: "全年" };
+      const quarterRows = activeData.filter(d => d.type === "quarterly" && d.year === year).sort((a, b) => {
+        const order = { Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
+        return order[a.period] - order[b.period];
+      });
+      if (!quarterRows.length) return null;
+      const revenue = quarterRows.reduce((sum, row) => sum + row.revenue_100m, 0);
+      const previousRows = activeData.filter(d => d.type === "quarterly" && d.year === year - 1 && quarterRows.some(current => current.period === d.period));
+      const previousRevenue = previousRows.reduce((sum, row) => sum + row.revenue_100m, 0);
+      return {
+        ...quarterRows.at(-1),
+        period: "累計",
+        revenue_100m: revenue,
+        yoy_pct: previousRevenue ? (revenue / previousRevenue - 1) * 100 : null,
+        complete: false,
+        label: `累計${quarterRows.at(-1).period}`
+      };
+    }
+
+    function filteredYears() {
+      const start = Number(els.startYear.value);
+      const end = Number(els.endYear.value);
+      return getYearOptions(activeData, els.viewMode.value).filter(year => year >= start && year <= end);
+    }
+
+    function selectedYear() {
+      const years = filteredYears();
+      if (!years.length) return null;
+      timelineStartIndex = Math.min(Math.max(timelineStartIndex, 0), years.length - 1);
+      timelineIndex = Math.min(Math.max(timelineIndex, 0), years.length - 1);
+      return years[timelineIndex];
+    }
+
+    function selectedYearRows(year = selectedYear()) {
+      if (year == null) return [];
+      const order = { "全年": 0, Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
+      if (els.viewMode.value === "annual") {
+        return annualize(activeData).filter(d => d.year === year);
+      }
+      const quarterly = activeData.filter(d => d.type === "quarterly" && d.year === year);
+      const source = quarterly.length ? quarterly : annualize(activeData).filter(d => d.year === year);
+      return source.sort((a, b) => {
+        const order = { "全年": 0, Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
+        return a.year - b.year || order[a.period] - order[b.period];
+      });
+    }
+
+    function periodRows() {
+      const start = Number(els.startYear.value);
+      const end = Number(els.endYear.value);
+      const mode = els.viewMode.value;
+      const source = mode === "annual" ? annualize(activeData) : activeData.filter(d => d.type === "quarterly");
+      return source.filter(d => d.year >= start && d.year <= end).sort((a, b) => {
+        const order = { "全年": 0, Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
+        return a.year - b.year || order[a.period] - order[b.period];
+      });
+    }
+
+    function rowLabel(d) {
+      return d.period === "全年" ? `${d.year}年` : `${d.year}年${d.period}`;
+    }
+
+    function setPlaying(nextState) {
+      isPlaying = nextState;
+      els.playIcon.textContent = isPlaying ? "Ⅱ" : "▶";
+      els.playText.textContent = isPlaying ? "暫停" : "播放";
+      if (!isPlaying && playTimer) {
+        window.clearInterval(playTimer);
+        playTimer = null;
+      }
+    }
+
+    function syncTimelineControls(years) {
+      if (!years.length) {
+        timelineStartIndex = 0;
+        timelineIndex = 0;
+        els.timelineStartSlider.max = 0;
+        els.timelineStartSlider.value = 0;
+        els.timelineSlider.max = 0;
+        els.timelineSlider.value = 0;
+        els.rangeStart.textContent = "無資料";
+        els.rangeEnd.textContent = "無資料";
+        els.currentPeriod.textContent = "-";
+        els.currentDetail.textContent = "目前篩選條件沒有資料。";
+        els.playTimeline.disabled = true;
+        els.timelineStartSlider.disabled = true;
+        els.timelineSlider.disabled = true;
+        setPlaying(false);
+        return;
+      }
+
+      timelineStartIndex = Math.min(Math.max(timelineStartIndex, 0), years.length - 1);
+      timelineIndex = Math.min(Math.max(timelineIndex, 0), years.length - 1);
+      if (timelineStartIndex > timelineIndex) timelineStartIndex = timelineIndex;
+      const currentYear = years[timelineIndex];
+      const summary = yearSummary(currentYear);
+      els.timelineStartControl.hidden = true;
+      els.timelineStartSlider.disabled = true;
+      els.timelineSlider.disabled = false;
+      els.playTimeline.disabled = years.length <= 1;
+      els.timelineStartSlider.max = years.length - 1;
+      els.timelineStartSlider.value = timelineStartIndex;
+      els.timelineSlider.max = years.length - 1;
+      els.timelineSlider.value = timelineIndex;
+      els.rangeStart.textContent = `${years[0]}年`;
+      els.rangeEnd.textContent = `${years[years.length - 1]}年`;
+      els.currentPeriod.textContent = `${currentYear}年`;
+      els.currentDetail.textContent = summary
+        ? `${summary.label} ${formatNumber(summary.revenue_100m, summary.revenue_100m % 1 ? 1 : 0)} 億元${summary.yoy_pct == null ? "" : `，YoY ${summary.yoy_pct.toFixed(1)}%`}`
+        : "尚無年度加總資料。";
+    }
+
+    function syncCumulativeControls(rows) {
+      if (!rows.length) {
+        timelineStartIndex = 0;
+        timelineIndex = 0;
+        els.timelineStartSlider.max = 0;
+        els.timelineStartSlider.value = 0;
+        els.timelineSlider.max = 0;
+        els.timelineSlider.value = 0;
+        els.rangeStart.textContent = "無資料";
+        els.rangeEnd.textContent = "無資料";
+        els.currentPeriod.textContent = "-";
+        els.currentDetail.textContent = "目前篩選條件沒有資料。";
+        els.playTimeline.disabled = true;
+        els.timelineStartSlider.disabled = true;
+        els.timelineSlider.disabled = true;
+        setPlaying(false);
+        return;
+      }
+
+      timelineStartIndex = Math.min(Math.max(timelineStartIndex, 0), rows.length - 1);
+      timelineIndex = Math.min(Math.max(timelineIndex, 0), rows.length - 1);
+      if (timelineStartIndex > timelineIndex) timelineStartIndex = timelineIndex;
+      const current = rows[timelineIndex];
+      els.timelineStartControl.hidden = false;
+      els.timelineStartSlider.disabled = rows.length <= 1;
+      els.timelineSlider.disabled = false;
+      els.playTimeline.disabled = timelineIndex - timelineStartIndex < 1;
+      els.timelineStartSlider.max = rows.length - 1;
+      els.timelineStartSlider.value = timelineStartIndex;
+      els.timelineSlider.max = rows.length - 1;
+      els.timelineSlider.value = timelineIndex;
+      els.rangeStart.textContent = rowLabel(rows[timelineStartIndex]);
+      els.rangeEnd.textContent = rowLabel(rows[timelineIndex]);
+      els.currentPeriod.textContent = rowLabel(current);
+      els.currentDetail.textContent = `${formatNumber(current.revenue_100m, current.revenue_100m % 1 ? 1 : 0)} 億元${current.yoy_pct == null ? "" : `，YoY ${current.yoy_pct.toFixed(1)}%`}`;
+    }
+
+    function updateKpis(year) {
+      if (year == null) {
+        els.headlineTitle.textContent = "無年度資料";
+        els.headlineRevenue.textContent = "-";
+        els.headlineCaption.textContent = "請調整篩選條件或資料來源。";
+        els.growthMultiple.textContent = "-";
+        els.growthDelta.textContent = "無資料";
+        els.cagr.textContent = "-";
+        els.cagrDelta.textContent = "無資料";
+        els.latestQuarter.textContent = "-";
+        els.latestYoy.textContent = "無季度資料";
+        els.q4Peak.textContent = "-";
+        els.q4Delta.textContent = "無Q4資料";
+        return;
+      }
+      const annual = annualize(activeData);
+      const currentAnnual = yearSummary(year);
+      const previousAnnual = annual.find(d => d.year === year - 1);
+      const quarterRows = activeData.filter(d => d.type === "quarterly" && d.year === year).sort((a, b) => a.period.localeCompare(b.period));
+      const peakQuarter = quarterRows.reduce((max, row) => !max || row.revenue_100m > max.revenue_100m ? row : max, null);
+      const q4 = quarterRows.find(d => d.period === "Q4");
+      const yoy = currentAnnual?.yoy_pct ?? null;
+      const q4Share = currentAnnual?.complete && q4 ? q4.revenue_100m / currentAnnual.revenue_100m * 100 : null;
+
+      els.headlineTitle.textContent = currentAnnual ? `${year}年${currentAnnual.complete ? "全年" : currentAnnual.label}營業額` : `${year}年資料`;
+      els.headlineRevenue.textContent = currentAnnual ? formatNumber(currentAnnual.revenue_100m, currentAnnual.revenue_100m % 1 ? 1 : 0) : "-";
+      els.headlineCaption.textContent = currentAnnual
+        ? `億元新台幣${yoy == null ? "。" : `，較去年同期${yoy >= 0 ? "成長" : "減少"} ${Math.abs(yoy).toFixed(1)}%。`}`
+        : "此年度尚無可用資料。";
+
+      els.kpiTitle1.textContent = currentAnnual?.complete ? "當年營業額" : "當年累計營業額";
+      els.growthMultiple.textContent = currentAnnual ? formatNumber(currentAnnual.revenue_100m, currentAnnual.revenue_100m % 1 ? 1 : 0) : "-";
+      els.growthDelta.textContent = `${year}年${currentAnnual?.complete ? "全年" : currentAnnual?.label ?? ""}`;
+
+      els.kpiTitle2.textContent = currentAnnual?.complete ? "當年年增率" : "累計年增率";
+      els.cagr.textContent = yoy == null ? "-" : `${yoy.toFixed(1)}%`;
+      els.cagrDelta.textContent = previousAnnual || !currentAnnual?.complete ? "較去年同期" : "缺少前一年資料";
+
+      els.kpiTitle3.textContent = "當年高峰季度";
+      els.latestQuarter.textContent = peakQuarter ? peakQuarter.period : "-";
+      els.latestYoy.textContent = peakQuarter ? `${formatNumber(peakQuarter.revenue_100m, peakQuarter.revenue_100m % 1 ? 1 : 0)} 億元` : "無季度資料";
+
+      els.kpiTitle4.textContent = "Q4占全年";
+      els.q4Peak.textContent = q4Share == null ? "-" : `${q4Share.toFixed(1)}%`;
+      els.q4Delta.textContent = q4Share == null ? "需四季齊全" : `${formatNumber(q4.revenue_100m, q4.revenue_100m % 1 ? 1 : 0)} 億元`;
+    }
+
+    function updateCumulativeKpis(rows) {
+      if (!rows.length) {
+        updateKpis(null);
+        return;
+      }
+      const annual = annualize(activeData);
+      const first = annual.find(d => d.year === 104) ?? annual[0];
+      const visibleAnnual = annual.filter(d => d.year >= rows[0].year && d.year <= rows[rows.length - 1].year);
+      const last = visibleAnnual.at(-1) ?? annual.at(-1);
+      const latest = rows.at(-1);
+      const multiple = first && last ? last.revenue_100m / first.revenue_100m : null;
+      const cagr = first && last && last.year > first.year ? (Math.pow(multiple, 1 / (last.year - first.year)) - 1) * 100 : null;
+      const q4Years = [...new Set(activeData.filter(d => d.type === "quarterly" && d.year >= rows[0].year && d.year <= rows[rows.length - 1].year).map(d => d.year))]
+        .filter(year => activeData.filter(d => d.type === "quarterly" && d.year === year).length === 4);
+      const q4PeakCount = q4Years.filter(year => {
+        const yearRows = activeData.filter(d => d.year === year && d.type === "quarterly");
+        const peak = yearRows.reduce((max, row) => row.revenue_100m > max.revenue_100m ? row : max, yearRows[0]);
+        return peak && peak.period === "Q4";
+      }).length;
+
+      els.headlineTitle.textContent = `${rowLabel(latest)}營業額`;
+      els.headlineRevenue.textContent = formatNumber(latest.revenue_100m, latest.revenue_100m % 1 ? 1 : 0);
+      els.headlineCaption.textContent = `億元新台幣${latest.yoy_pct == null ? "。" : `，年增率 ${latest.yoy_pct.toFixed(1)}%。`}`;
+
+      els.kpiTitle1.textContent = "長期成長倍數";
+      els.growthMultiple.textContent = multiple == null ? "-" : `${multiple.toFixed(2)}x`;
+      els.growthDelta.textContent = first && last ? `${first.year}年到${last.year}年` : "資料不足";
+
+      els.kpiTitle2.textContent = "年複合成長率";
+      els.cagr.textContent = cagr == null ? "-" : `${cagr.toFixed(1)}%`;
+      els.cagrDelta.textContent = "以年度加總估算";
+
+      els.kpiTitle3.textContent = els.viewMode.value === "annual" ? "目前年度" : "目前期別";
+      els.latestQuarter.textContent = formatNumber(latest.revenue_100m, latest.revenue_100m % 1 ? 1 : 0);
+      els.latestYoy.textContent = latest.yoy_pct == null ? rowLabel(latest) : `${rowLabel(latest)} YoY ${latest.yoy_pct.toFixed(1)}%`;
+
+      els.kpiTitle4.textContent = "Q4為年度高峰";
+      els.q4Peak.textContent = q4Years.length ? `${q4PeakCount}/${q4Years.length}年` : "-";
+      els.q4Delta.textContent = q4Years.length ? `${q4Years[0]}-${q4Years.at(-1)}年，營業額最高季度均為第4季` : "無季度資料";
+    }
+
+    function renderChart(rows) {
+      if (!rows.length) {
+        els.mainChart.innerHTML = "";
+        return;
+      }
+      const width = 1100;
+      const height = 430;
+      const margin = { top: 36, right: 68, bottom: 70, left: 70 };
+      const plotW = width - margin.left - margin.right;
+      const plotH = height - margin.top - margin.bottom;
+      const maxRevenue = Math.max(...rows.map(d => d.revenue_100m)) * 1.14;
+      const yoyValues = rows.map(d => d.yoy_pct).filter(v => v != null);
+      const maxYoy = Math.max(20, ...yoyValues) * 1.1;
+      const minYoy = Math.min(0, ...yoyValues);
+      const gap = 7;
+      const barW = Math.max(8, (plotW / rows.length) - gap);
+      const x = index => margin.left + index * (plotW / rows.length) + gap / 2;
+      const yRevenue = value => margin.top + plotH - (value / maxRevenue) * plotH;
+      const yYoy = value => margin.top + plotH - ((value - minYoy) / (maxYoy - minYoy)) * plotH;
+      const labels = rows.map(d => d.period === "全年" ? `${d.year}` : `${d.year}${d.period.replace("Q", "Q")}`);
+      const points = rows.map((d, i) => d.yoy_pct == null ? null : `${x(i) + barW / 2},${yYoy(d.yoy_pct)}`).filter(Boolean);
+
+      const bars = rows.map((d, i) => {
+        const h = margin.top + plotH - yRevenue(d.revenue_100m);
+        const label = rows.length <= 18 || i % 2 === 0 ? `<text x="${x(i) + barW / 2}" y="${height - 38}" text-anchor="middle" fill="#64748B" font-size="12">${labels[i]}</text>` : "";
+        const valueLabel = rows.length <= 16 ? `<text x="${x(i) + barW / 2}" y="${yRevenue(d.revenue_100m) - 8}" text-anchor="middle" fill="#111827" font-size="12" font-weight="800">${formatNumber(d.revenue_100m, d.revenue_100m % 1 ? 1 : 0)}</text>` : "";
+        const activeStroke = i === rows.length - 1 ? `stroke="var(--amber)" stroke-width="3"` : "";
+        return `
+          <rect x="${x(i)}" y="${yRevenue(d.revenue_100m)}" width="${barW}" height="${h}" rx="5" fill="url(#barGrad)" ${activeStroke}></rect>
+          ${valueLabel}
+          ${label}
+        `;
+      }).join("");
+
+      const yoyLine = points.length > 1 ? `<polyline points="${points.join(" ")}" fill="none" stroke="var(--rose)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>` : "";
+      const yoyDots = rows.map((d, i) => {
+        if (d.yoy_pct == null) return "";
+        const cx = x(i) + barW / 2;
+        const cy = yYoy(d.yoy_pct);
+        const tipW = 190;
+        const tipH = 58;
+        const tipX = Math.min(Math.max(cx - tipW / 2, margin.left), width - margin.right - tipW);
+        const tipY = cy > margin.top + tipH + 18 ? cy - tipH - 16 : cy + 16;
+        const revenueDigits = d.revenue_100m % 1 ? 1 : 0;
+        return `
+          <g class="yoy-point" tabindex="0" aria-label="${rowLabel(d)}年增率 ${d.yoy_pct.toFixed(2)}%，營業額 ${formatNumber(d.revenue_100m, revenueDigits)} 億元">
+            <circle class="yoy-hit" cx="${cx}" cy="${cy}" r="16"></circle>
+            <circle cx="${cx}" cy="${cy}" r="5" fill="#F6F8FB" stroke="var(--rose)" stroke-width="3"></circle>
+            <g class="tooltip-box">
+              <rect x="${tipX}" y="${tipY}" width="${tipW}" height="${tipH}" rx="8" fill="#111827"></rect>
+              <path d="M ${cx - 7} ${tipY > cy ? tipY : tipY + tipH} L ${cx} ${tipY > cy ? tipY - 7 : tipY + tipH + 7} L ${cx + 7} ${tipY > cy ? tipY : tipY + tipH} Z" fill="#111827"></path>
+            </g>
+            <g class="tooltip-text">
+              <text x="${tipX + 14}" y="${tipY + 23}" fill="#F6F8FB" font-size="13" font-weight="800">${rowLabel(d)}</text>
+              <text x="${tipX + 14}" y="${tipY + 43}" fill="#47C7A8" font-size="13" font-weight="800">YoY ${d.yoy_pct.toFixed(2)}%｜${formatNumber(d.revenue_100m, revenueDigits)} 億元</text>
+            </g>
+          </g>
+        `;
+      }).join("");
+
+      const grid = [0, .25, .5, .75, 1].map(t => {
+        const y = margin.top + plotH * t;
+        const val = maxRevenue * (1 - t);
+        return `
+          <line x1="${margin.left}" x2="${width - margin.right}" y1="${y}" y2="${y}" stroke="rgba(17,24,39,.08)"></line>
+          <text x="${margin.left - 12}" y="${y + 4}" text-anchor="end" fill="#64748B" font-size="12">${formatNumber(val, 0)}</text>
+        `;
+      }).join("");
+
+      els.mainChart.innerHTML = `
+        <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="營業額與年增率圖表">
+          <defs>
+            <linearGradient id="barGrad" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#0A84FF"></stop>
+              <stop offset="1" stop-color="#47C7A8"></stop>
+            </linearGradient>
+          </defs>
+          ${grid}
+          <line x1="${margin.left}" x2="${margin.left}" y1="${margin.top}" y2="${margin.top + plotH}" stroke="rgba(17,24,39,.18)"></line>
+          <line x1="${margin.left}" x2="${width - margin.right}" y1="${margin.top + plotH}" y2="${margin.top + plotH}" stroke="rgba(17,24,39,.18)"></line>
+          <text x="${margin.left}" y="20" fill="#64748B" font-size="12">億元</text>
+          <text x="${width - margin.right}" y="20" fill="#64748B" text-anchor="end" font-size="12">年增率</text>
+          ${bars}
+          ${yoyLine}
+          ${yoyDots}
+        </svg>
+      `;
+    }
+
+    function renderTable(rows) {
+      els.dataRows.innerHTML = rows.map(d => `
+        <tr>
+          <td>${d.year}年</td>
+          <td>${d.period}</td>
+          <td class="num">${formatNumber(d.revenue_100m, d.revenue_100m % 1 ? 1 : 0)} 億元</td>
+          <td class="num">${d.yoy_pct == null ? "-" : d.yoy_pct.toFixed(2) + "%"}</td>
+          <td>${d.driver}</td>
+        </tr>
+      `).join("");
+    }
+
+    function render() {
+      const isCumulative = els.playScope.value === "cumulative";
+      els.timelineLabel.textContent = isCumulative ? "動態時間拉桿" : "動態年度拉桿";
+      els.timelineEndLabel.textContent = isCumulative ? "播放至" : "年度";
+      els.nowLabel.textContent = isCumulative ? "目前播放至" : "目前年度";
+
+      let rows;
+      if (isCumulative) {
+        const allRows = periodRows();
+        syncCumulativeControls(allRows);
+        rows = allRows.slice(timelineStartIndex, timelineIndex + 1);
+        els.chartTitle.textContent = els.viewMode.value === "annual" ? "年度累進營業額與年增率" : "季度累進營業額與年增率";
+        updateCumulativeKpis(rows);
+      } else {
+        const years = filteredYears();
+        syncTimelineControls(years);
+        const year = selectedYear();
+        rows = selectedYearRows(year);
+        els.chartTitle.textContent = els.viewMode.value === "annual" ? `${year ?? ""}年營業額與年增率` : `${year ?? ""}年各季營業額與年增率`;
+        updateKpis(year);
+      }
+      renderChart(rows);
+      renderTable(rows);
+    }
+
+    function resetTimelineToEnd() {
+      const items = els.playScope.value === "cumulative" ? periodRows() : filteredYears();
+      timelineStartIndex = 0;
+      timelineIndex = Math.max(0, items.length - 1);
+    }
+
+    function startPlayback() {
+      const items = els.playScope.value === "cumulative" ? periodRows() : filteredYears();
+      if (items.length <= 1) return;
+      const playbackEndIndex = timelineIndex;
+      if (els.playScope.value === "cumulative") {
+        if (timelineIndex <= timelineStartIndex) return;
+        timelineIndex = timelineStartIndex;
+      } else if (timelineIndex >= items.length - 1) {
+        timelineIndex = 0;
+      }
+      setPlaying(true);
+      render();
+      playTimer = window.setInterval(() => {
+        const currentItems = els.playScope.value === "cumulative" ? periodRows() : filteredYears();
+        const endIndex = els.playScope.value === "cumulative" ? Math.min(playbackEndIndex, currentItems.length - 1) : currentItems.length - 1;
+        if (timelineIndex >= endIndex) {
+          setPlaying(false);
+          return;
+        }
+        timelineIndex += 1;
+        render();
+      }, 780);
+    }
+
+    async function loadSheet() {
+      const url = els.sheetUrl.value.trim();
+      if (!url) return;
+      els.dataStatus.textContent = "正在載入資料...";
+      try {
+        if (url.includes("docs.google.com/spreadsheets/")) {
+          activeData = await loadGoogleSheet(url);
+        } else {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          activeData = parseCsv(await response.text());
+        }
+        setupFilters();
+        resetTimelineToEnd();
+        render();
+        els.dataStatus.textContent = `已載入資料：${activeData.length} 筆資料。`;
+      } catch (error) {
+        els.dataStatus.textContent = `載入失敗，已保留內建資料。錯誤：${error.message}`;
+      }
+    }
+
+    els.sheetUrl.value = defaultSheetUrl;
+    document.querySelector("#loadSheet").addEventListener("click", loadSheet);
+    document.querySelector("#resetData").addEventListener("click", () => {
+      activeData = [...embeddedData];
+      setupFilters();
+      resetTimelineToEnd();
+      render();
+      els.dataStatus.textContent = "目前使用內建資料。";
+    });
+    els.startYear.addEventListener("change", () => {
+      setPlaying(false);
+      resetTimelineToEnd();
+      render();
+    });
+    els.endYear.addEventListener("change", () => {
+      setPlaying(false);
+      resetTimelineToEnd();
+      render();
+    });
+    els.viewMode.addEventListener("change", () => {
+      setPlaying(false);
+      setupFilters(false);
+      resetTimelineToEnd();
+      render();
+    });
+    els.playScope.addEventListener("change", () => {
+      setPlaying(false);
+      resetTimelineToEnd();
+      render();
+    });
+    els.timelineSlider.addEventListener("input", () => {
+      setPlaying(false);
+      timelineIndex = Number(els.timelineSlider.value);
+      if (els.playScope.value === "cumulative" && timelineIndex < timelineStartIndex) {
+        timelineStartIndex = timelineIndex;
+      }
+      render();
+    });
+    els.timelineStartSlider.addEventListener("input", () => {
+      setPlaying(false);
+      timelineStartIndex = Number(els.timelineStartSlider.value);
+      if (timelineStartIndex > timelineIndex) {
+        timelineIndex = timelineStartIndex;
+      }
+      render();
+    });
+    els.playTimeline.addEventListener("click", () => {
+      if (isPlaying) {
+        setPlaying(false);
+      } else {
+        startPlayback();
+      }
+    });
+
+    setupFilters();
+    resetTimelineToEnd();
+    render();
+    loadSheet();
+  </script>
 </body>
 </html>
